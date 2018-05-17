@@ -53,7 +53,7 @@ export default class ComponentTable extends React.Component{
             <tr>
               <td className = "left"> Choose an option:</td>
               <td>
-                <select defaultValue = "Choose Option" id = "options" onChange = {this.selector}>
+                <select defaultValue = "Choose Option" onChange = {this.selector}>
                   <option disabled hidden> Choose Option</option>
                   <option> GET</option>
                   <option> POST</option>
