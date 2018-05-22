@@ -9,15 +9,13 @@ export default class GetFrame extends React.Component{
     super();
     this.state = {
       disabled: false,
-      txtDisabled: true,
-      boardID: "",
-      key: "",
-      token: "",
+      txtDisabled: false,
+      componentID: "",
       btnName: "",
       hidden: true,
       display: false,
       data: null,
-      test: false,
+      id: "",
     };
   }
 
@@ -27,43 +25,32 @@ export default class GetFrame extends React.Component{
     if(event.target.selectedIndex === 1){
       //Setting state
       this.setState({
-        txtDisabled: false,
-        boardID: "",
-        key: "",
-        token: "",
-        btnName: "Get List Information",
-        hidden: false,
+        display: true,
+        data: this.props.listData,
+        id: "list",
       });
     }else{
       //Setting state
       this.setState({
-        txtDisabled: false,
-        boardID: "",
-        key: "",
-        token: "",
-        btnName: "Get Card Information",
         hidden: false,
+        id: "card"
       });
     }
   }
 
-  test = () => {
-    this.setState({test: true});
-  }
+  /**generateOptions Function*/
+  generateOptions = () => {
+    //Declaring fields
+    var options = [];
 
-  /**update Function*/
-  update = (event) => {
-    //Checking component
-    if(event.target.id === "txtBoard"){
-      //Setting state
-      this.setState({boardID: event.target.value});
-    }else if(event.target.id === "txtKey"){
-      //Setting state
-      this.setState({key: event.target.value});
-    }else{
-      //Setting state
-      this.setState({token: event.target.value});
+    //Creating options
+    for(var i = 0; i < this.props.listData.length; i++){
+      //Storing in array
+      options.push(<option key = {i}> {this.props.listData[i].name}</option>);
     }
+
+    //Returning options
+    return options;
   }
 
   /**displayResults Function*/
@@ -75,10 +62,7 @@ export default class GetFrame extends React.Component{
     //Checking display boolean
     if(display === true){
       //Setting frame
-      results = (<ResultFrame data = {this.state.data}/>);
-    }
-    if(this.state.test === true){
-      results = (<ResultFrame />);
+      results = (<ResultFrame data = {this.state.data} id = {this.state.id}/>);
     }
 
     //Returning result frame
@@ -86,24 +70,28 @@ export default class GetFrame extends React.Component{
   }
 
   /**getData Function*/
-  getData = () => {
+  getData = (event) => {
     //Declaring fields
-    var url = "";
+    var listID;
+    var url;
 
-    url = "https://api.trello.com/1/boards/" +
-      this.state.boardID + "/lists?token=" +
-      this.state.token + "&key=" +
-      this.state.key;
+    //Getting list id
+    listID = this.props.listData[event.target.selectedIndex - 1].id;
 
-    Axios.get(url).then(res => {
-      console.log(res.data);
-      //Setting state
-      this.setState({
-        display: true,
-        data: res.data,
-        disabled: true,
-        txtDisabled: true,
-      });
+    //Setting URL
+    url = "https://api.trello.com/1/lists/" +
+      listID + "/cards?token=" +
+      this.props.tokenID + "&key=" +
+      this.props.keyID;
+
+    //Getting data from url
+    Axios.get(url)
+      .then(res => {
+        //Setting state
+        this.setState({
+          display: true,
+          data: res.data,
+        });
     });
   }
 
@@ -112,11 +100,10 @@ export default class GetFrame extends React.Component{
     return(
       <div>
         <br />
-        <br />
         <table cellPadding = "5px" frame = "box" width = "60%" align = "center">
           <tbody>
             <tr>
-              <td className = "left"> What component?</td>
+              <td className = "left"> What component to view?</td>
               <td>
                 <select defaultValue = "Choose Component" disabled = {this.state.disabled} onChange = {this.enable}>
                   <option disabled hidden> Choose Component</option>
@@ -126,47 +113,16 @@ export default class GetFrame extends React.Component{
               </td>
             </tr>
             <tr>
-              <td className = "left"> Board ID</td>
+              <td className = "left"><span hidden = {this.state.hidden}> Available Lists</span></td>
               <td>
-                <input type = "text"
-                  id = "txtBoard"
-                  value = {this.state.boardID}
-                  disabled = {this.state.txtDisabled}
-                  onChange = {this.update}/>
-              </td>
-            </tr>
-            <tr>
-              <td className = "left"> Key</td>
-              <td>
-                <input type = "text"
-                  id = "txtKey"
-                  value = {this.state.key}
-                  disabled = {this.state.txtDisabled}
-                  onChange = {this.update}/>
-              </td>
-            </tr>
-            <tr>
-              <td className = "left"> Token</td>
-              <td>
-                <input type = "text"
-                  id = "txtToken"
-                  value = {this.state.token}
-                  disabled = {this.state.txtDisabled}
-                  onChange = {this.update}/>
-              </td>
-            </tr>
-            <tr>
-              <td className = "center" colSpan = "2">
-                <input type = "button"
-                  disabled = {this.state.disabled}
-                  hidden = {this.state.hidden}
-                  value = {this.state.btnName}
-                  onClick = {() => {this.getData()}}/>
+                <select defaultValue = "Choose List" hidden = {this.state.hidden} onChange = {this.getData}>
+                  <option disabled hidden> Choose List</option>
+                  {this.generateOptions()}
+                </select>
               </td>
             </tr>
           </tbody>
         </table>
-        <input type = "button" value = "test" onClick = {this.test}/>
         {this.displayResults()}
       </div>
     );

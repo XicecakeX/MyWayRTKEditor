@@ -6,6 +6,24 @@ table.result{
   align: center;
 }
 
+th{
+  border: 1px solid black;
+}
+
+th.number{
+  width: 7%;
+  border: 1px solid black;
+}
+
+th.left{
+  text-align: right;
+  width: 50%;
+}
+
+th.right{
+  width: 50%;
+}
+
 td.left{
   text-align: right;
   width: 50%;
@@ -15,11 +33,12 @@ td.center{
   text-align: center;
 }
 
-th{
+td.number{
   border: 1px solid black;
+  text-align: center;
 }
 
-th.number{
-  width: 50px;
+td.data{
   border: 1px solid black;
+  text-align: center;
 }

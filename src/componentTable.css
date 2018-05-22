@@ -3,6 +3,10 @@ td.left{
   width: 50%;
 }
 
+td.center{
+  text-align: center;
+}
+
 input.url{
   width: 50%;
 }
